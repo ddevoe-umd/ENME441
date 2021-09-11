@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
-# Utility to modify Pi system files to install
-# the ssmtp email utility, and set up the rc.local file to automatically
-# email the Pi IP address on boot.  
+# Utility to modify Pi system files to install the ssmtp email utility, 
+# and set up the rc.local file to automatically email the Pi IP address on boot.  
+# (among other things)
 #
 # Instructions:
 #   1. Set up your Gmail account.  You MUST use a non-UMD Gmail account. It
@@ -44,7 +44,7 @@ def fileout(filepath, lines, permissions=0):
   try:
     f = open(filepath, write_or_append)
   except Exception as e:
-    print("\n\nError while accessing " + filepath + " : \n", e, "\n\n")
+    print('\n\nError while accessing %s: \n%s\n\n' % (filepath, e))
   else: # write all lines to new file
     for line in lines:
       f.write(line)
@@ -52,9 +52,9 @@ def fileout(filepath, lines, permissions=0):
   finally:
     f.close()
   if permissions:
-    system('sudo chmod ' + permissions + ' ' + filepath)
-    system('sudo chown root ' + filepath)
-    system('sudo chgrp root ' + filepath)
+    system('sudo chmod %s %s' % (permissions,filepath))
+    system('sudo chown root %s' % filepath)
+    system('sudo chgrp root %s' % filepath)
 
 
 
@@ -86,7 +86,7 @@ def main():
   password = input('Enter your Gmail password: ').strip()
   # get rid of anything beyond the username itself, 
   # e.g. remove "@gmail.com":
-  idx = username.find("@")
+  idx = username.find('@')
   if idx>0:
     username = username[:idx]
   username = username.strip() 
@@ -129,11 +129,11 @@ def main():
     '',
     'sleep 15',
     'message="Pi IP = $(hostname -I)"',
-    'echo "Subject: $message" |msmtp --from=default -t '+username+'@gmail.com'
+    'echo "Subject: $message" |msmtp --from=default -t '+ username +'@gmail.com'
     '',
     'exit 0'  ]
   fileout(filepath, lines, '755')
-  print(filepath + " has been updated\n")
+  print('%s has been updated\n' % filepath)
 
 
   # ********************************************************************
@@ -141,19 +141,19 @@ def main():
   system('sudo raspi-config nonint do_boot_wait 0')
   print('Wait for network at boot enabled\n')
 
+  # ********************************************************************
+  # Enable VNC server:
+  system('sudo systemctl enable vncserver-x11-serviced')
+  print('VNC server enabled\n')
 
   # ********************************************************************
   # all done:
   print('**************************************\nSetup complete.\n')
   print('If you made an error in your username or password, run the')
-  print('utility again to correct the entries.\n')
-  print('Before rebooting or shutting down, reconnect to your current')
-  print('WiFi network using the GUI to ensure that it is entered into')
-  print('the wpa_supplicants.conf file.\n')
-  print('After connecting your WiFi, reboot via "sudo reboot" or')
-  print('shutdown your via "sudo shutdown -h."\n')
+  print('setup.py utility again to correct the entries.\n')
+  print('Otherwise, reboot ("sudo reboot") or')
+  print('shutdown ("sudo shutdown -h now") your Pi.\n')
 
 
 if __name__ == "__main__":
   main()
-
