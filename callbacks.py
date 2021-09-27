@@ -16,7 +16,7 @@ gpio.add_event_detect(in1, gpio.RISING, callback=myCallback, bouncetime=100)
 
 # Infinite loop:
 while True:
-  print('.', end='')
-  time.sleep(0.1)
+  print('.')
+  time.sleep(1)
 
 gpio.cleanup()
